@@ -25,8 +25,21 @@
 
             <flux:table.rows>
                 @foreach ($this->brackets as $bracket)
+                    @php
+                        $champion = $bracket->status === App\Enums\BracketStatus::Completed ? $bracket->champion() : null;
+                    @endphp
+
                     <flux:table.row wire:key="bracket-{{ $bracket->id }}">
-                        <flux:table.cell variant="strong">{{ $bracket->name }}</flux:table.cell>
+                        <flux:table.cell variant="strong">
+                            {{ $bracket->name }}
+
+                            @if ($champion)
+                                <div class="mt-1 flex items-center gap-1.5 text-sm font-normal text-neutral-500 dark:text-neutral-400">
+                                    <flux:icon name="trophy" variant="micro" class="size-3.5 shrink-0 fill-orange-700 dark:fill-orange-400" />
+                                    {{ $champion->name }}
+                                </div>
+                            @endif
+                        </flux:table.cell>
 
                         <flux:table.cell>
                             <flux:badge size="sm" :color="match ($bracket->status) {
@@ -43,21 +56,27 @@
                         <flux:table.cell>{{ $bracket->created_at->diffForHumans() }}</flux:table.cell>
 
                         <flux:table.cell align="end">
-                            @if ($bracket->status === App\Enums\BracketStatus::Draft)
-                                <flux:button size="sm" :href="route('brackets.edit', $bracket)" wire:navigate>
-                                    {{ __('Edit') }}
-                                </flux:button>
-                            @else
-                                <flux:tooltip :content="$bracket->status === App\Enums\BracketStatus::Active
-                                    ? __('Voting is underway — brackets cannot be edited after launch.')
-                                    : __('This bracket has finished and can no longer be edited.')">
-                                    <div class="inline-flex">
-                                        <flux:button size="sm" disabled>
-                                            {{ __('Edit') }}
-                                        </flux:button>
-                                    </div>
-                                </flux:tooltip>
-                            @endif
+                            <div class="flex items-center justify-end gap-2">
+                                @if ($bracket->status === App\Enums\BracketStatus::Draft)
+                                    <flux:button size="sm" :href="route('brackets.edit', $bracket)" wire:navigate>
+                                        {{ __('Edit') }}
+                                    </flux:button>
+                                @else
+                                    <flux:button size="sm" :href="route('brackets.show', $bracket)" wire:navigate>
+                                        {{ __('View') }}
+                                    </flux:button>
+
+                                    <flux:tooltip :content="$bracket->status === App\Enums\BracketStatus::Active
+                                        ? __('Voting is underway — brackets cannot be edited after launch.')
+                                        : __('This bracket has finished and can no longer be edited.')">
+                                        <div class="inline-flex">
+                                            <flux:button size="sm" disabled>
+                                                {{ __('Edit') }}
+                                            </flux:button>
+                                        </div>
+                                    </flux:tooltip>
+                                @endif
+                            </div>
                         </flux:table.cell>
                     </flux:table.row>
                 @endforeach

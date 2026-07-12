@@ -32,6 +32,11 @@ new #[Layout('layouts.public')] class extends Component
         $this->voterToken = $voterToken ?? (is_string($cookie) ? $cookie : null);
     }
 
+    public function render(): mixed
+    {
+        return $this->view()->title($this->bracket->name);
+    }
+
     /** @return Collection<int, Collection<int, App\Models\Matchup>> */
     #[Computed]
     public function rounds(): Collection
@@ -61,6 +66,16 @@ new #[Layout('layouts.public')] class extends Component
             ->where('voter_hash', $voterHash)
             ->pluck('contestant_id', 'matchup_id')
             ->all();
+    }
+
+    #[Computed]
+    public function currentRoundClosesAt(): ?Carbon\CarbonInterface
+    {
+        if ($this->bracket->status !== BracketStatus::Active) {
+            return null;
+        }
+
+        return $this->rounds->get($this->bracket->current_round)?->first()?->closes_at;
     }
 
     public function vote(int $matchupId, int $contestantId): void

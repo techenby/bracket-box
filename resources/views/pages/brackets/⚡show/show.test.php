@@ -146,3 +146,41 @@ it('shows the champion once the bracket completes', function () {
         ->assertSee(__('Champion'))
         ->assertSee($bracket->champion()->name);
 });
+
+it('uses the bracket name as the page title', function () {
+    $bracket = publicBracket();
+
+    get(route('brackets.show', $bracket))
+        ->assertSee($bracket->name.' - '.config('app.name'));
+});
+
+it('shows a live countdown while a round is open', function () {
+    $bracket = publicBracket();
+
+    Livewire::test('pages::brackets.show', ['bracket' => $bracket])
+        ->assertSee(__('Round closes in'));
+});
+
+it('hides the countdown once the bracket completes', function () {
+    $bracket = publicBracket();
+    app(CloseRound::class)->handle($bracket);
+    app(CloseRound::class)->handle($bracket);
+
+    Livewire::test('pages::brackets.show', ['bracket' => $bracket])
+        ->assertDontSee(__('Round closes in'));
+});
+
+it('shows a share button on launched brackets', function () {
+    $bracket = publicBracket();
+
+    Livewire::test('pages::brackets.show', ['bracket' => $bracket])
+        ->assertSee(__('Share'));
+});
+
+it('hides the share button on draft previews', function () {
+    $draft = Bracket::factory()->create();
+
+    Livewire::actingAs($draft->user)
+        ->test('pages::brackets.show', ['bracket' => $draft])
+        ->assertDontSee(__('Share'));
+});

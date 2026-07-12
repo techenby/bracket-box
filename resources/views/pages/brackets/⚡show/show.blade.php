@@ -3,11 +3,26 @@
 @endphp
 
 <div class="grid gap-8 sm:gap-10">
-    <p class="font-code text-base/7 text-neutral-500 dark:text-neutral-400 sm:text-sm/6">
-        <a href="{{ route('home') }}" wire:navigate class="font-normal text-orange-700 underline decoration-orange-700/40 underline-offset-4 hover:decoration-orange-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 dark:text-orange-400 dark:decoration-orange-400/40 dark:hover:decoration-orange-400 dark:focus-visible:outline-orange-400">
-            &larr; {{ __('Browse brackets') }}
-        </a>
-    </p>
+    <div class="flex items-center justify-between gap-4">
+        <p class="font-code text-base/7 text-neutral-500 dark:text-neutral-400 sm:text-sm/6">
+            <a href="{{ route('home') }}" wire:navigate class="font-normal text-orange-700 underline decoration-orange-700/40 underline-offset-4 hover:decoration-orange-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-600 dark:text-orange-400 dark:decoration-orange-400/40 dark:hover:decoration-orange-400 dark:focus-visible:outline-orange-400">
+                &larr; {{ __('Browse brackets') }}
+            </a>
+        </p>
+
+        @if ($bracket->status !== App\Enums\BracketStatus::Draft)
+            <button
+                type="button"
+                x-data="{ copied: false }"
+                x-on:click="navigator.clipboard.writeText(@js(route('brackets.show', $bracket))).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                class="inline-flex shrink-0 items-center gap-2 border-2 border-neutral-900 bg-white px-3 py-2 font-pixel text-[0.5625rem] tracking-wide text-neutral-900 uppercase shadow-[3px_3px_0_0_#171717] outline-none hover:bg-yellow-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 dark:border-white/15 dark:bg-neutral-900 dark:text-neutral-100 dark:shadow-none dark:inset-ring dark:inset-ring-white/5 dark:hover:bg-orange-400/5 dark:focus-visible:outline-orange-400"
+            >
+                <flux:icon name="link" variant="micro" class="size-3.5 shrink-0 fill-orange-700 dark:fill-orange-400" />
+                <span x-show="!copied">{{ __('Share') }}</span>
+                <span x-show="copied" x-cloak class="text-orange-700 dark:text-orange-400">{{ __('Copied!') }}</span>
+            </button>
+        @endif
+    </div>
 
     <section class="relative border-2 border-neutral-900 bg-white p-6 shadow-[6px_6px_0_0_#171717] dark:border-white/15 dark:bg-neutral-900 dark:inset-ring dark:inset-ring-white/5 dark:shadow-none sm:p-10">
         <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-60 [background-image:repeating-linear-gradient(0deg,transparent_0_3px,rgba(0,0,0,0.025)_3px_4px)] dark:[background-image:repeating-linear-gradient(0deg,transparent_0_3px,rgba(255,255,255,0.025)_3px_4px)]"></div>
@@ -120,10 +135,39 @@
                         <h2 class="max-w-[30ch] font-editorial text-3xl tracking-tight text-balance text-neutral-900 dark:text-neutral-100 sm:text-4xl">
                             {{ $bracket->roundName($bracket->current_round) }}
                         </h2>
+                        <p class="font-code text-base/7 text-neutral-500 dark:text-neutral-400 sm:text-sm/6">
+                            {{ __('Choose a favorite in each matchup.') }}
+                        </p>
                     </div>
-                    <p class="font-code text-base/7 text-neutral-500 dark:text-neutral-400 sm:text-sm/6">
-                        {{ __('Choose a favorite in each matchup.') }}
-                    </p>
+
+                    @if ($this->currentRoundClosesAt)
+                        <div class="grid gap-1 sm:justify-items-end" wire:key="countdown-round-{{ $bracket->current_round }}">
+                            <p class="font-pixel text-[0.5625rem] tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
+                                {{ __('Round closes in') }}
+                            </p>
+                            <p
+                                x-data="{
+                                    target: {{ $this->currentRoundClosesAt->timestamp }},
+                                    remaining: 0,
+                                    tick() { this.remaining = Math.max(0, this.target - Math.floor(Date.now() / 1000)) },
+                                    get display() {
+                                        const pad = (n) => String(n).padStart(2, '0')
+                                        const days = Math.floor(this.remaining / 86400)
+                                        const hours = Math.floor((this.remaining % 86400) / 3600)
+                                        const minutes = Math.floor((this.remaining % 3600) / 60)
+                                        const seconds = this.remaining % 60
+
+                                        return (days > 0 ? days + 'd ' : '') + pad(hours) + ':' + pad(minutes) + ':' + pad(seconds)
+                                    },
+                                }"
+                                x-init="tick(); setInterval(() => tick(), 1000)"
+                                class="font-pixel text-2xl text-neutral-900 tabular-nums dark:text-neutral-100 sm:text-3xl"
+                                aria-live="off"
+                            >
+                                <span x-text="display">--:--:--</span>
+                            </p>
+                        </div>
+                    @endif
                 </header>
 
                 <div class="grid gap-5 lg:grid-cols-2">

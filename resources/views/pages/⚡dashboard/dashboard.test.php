@@ -56,3 +56,22 @@ it('disables editing for completed brackets and explains why', function () {
         ->assertSee(__('This bracket has finished and can no longer be edited.'))
         ->assertDontSee(route('brackets.edit', $bracket));
 });
+
+it('links launched brackets to their public page', function () {
+    $bracket = Bracket::factory()->active()->create();
+
+    Livewire::actingAs($bracket->user)
+        ->test('pages::dashboard')
+        ->assertSee(__('View'))
+        ->assertSee(route('brackets.show', $bracket));
+});
+
+it('shows the champion for completed brackets', function () {
+    $bracket = Bracket::factory()->completed()->create(['size' => 4]);
+    $winner = App\Models\Contestant::factory()->for($bracket)->create();
+    App\Models\Matchup::factory()->for($bracket)->create(['round' => 2, 'position' => 0, 'winner_id' => $winner->id]);
+
+    Livewire::actingAs($bracket->user)
+        ->test('pages::dashboard')
+        ->assertSee($winner->name);
+});
