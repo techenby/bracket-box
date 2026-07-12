@@ -40,7 +40,19 @@ it('creates a draft bracket and redirects to the edit page', function () {
         ->size->toBe(8)
         ->round_duration_hours->toBe(12)
         ->is_unlisted->toBeTrue()
-        ->slug->toStartWith('best-soda-');
+        ->slug->toBe('best-soda');
+});
+
+it('increments the slug when the name is already taken', function () {
+    Bracket::factory()->create(['slug' => 'best-soda']);
+
+    Livewire::actingAs(User::factory()->create())
+        ->test('pages::brackets.create')
+        ->set('form.name', 'Best Soda')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(Bracket::latest('id')->first()->slug)->toBe('best-soda-2');
 });
 
 it('validates the details', function (string $field, mixed $value) {

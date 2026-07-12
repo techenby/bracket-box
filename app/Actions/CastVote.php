@@ -24,13 +24,13 @@ class CastVote
         return Vote::updateOrCreate(
             attributes: [
                 'matchup_id' => $matchup->id,
-                'voter_hash' => $this->getVoterHash($user, $guestToken),
+                'voter_hash' => $this->hashFor($user, $guestToken),
             ],
             values: ['contestant_id' => $contestant->id, 'user_id' => $user?->id],
         );
     }
 
-    private function getVoterHash(?User $user = null, ?string $token = null): string
+    public function hashFor(?User $user = null, ?string $token = null): string
     {
         $data = $user ? 'user:'.$user->id : 'guest:'.$token;
 

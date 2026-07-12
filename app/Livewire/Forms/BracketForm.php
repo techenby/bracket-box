@@ -60,7 +60,7 @@ class BracketForm extends Form
 
         return Auth::user()->brackets()->create([
             'name' => $this->name,
-            'slug' => Str::slug($this->name).'-'.Str::lower(Str::random(6)),
+            'slug' => $this->uniqueSlug(),
             'description' => $this->description !== '' ? $this->description : null,
             'size' => $this->size,
             'status' => BracketStatus::Draft,
@@ -87,5 +87,19 @@ class BracketForm extends Form
     private function contestantCount(): int
     {
         return (int) $this->bracket?->contestants()->count();
+    }
+
+    private function uniqueSlug(): string
+    {
+        $base = Str::slug($this->name);
+        $slug = $base;
+        $suffix = 2;
+
+        while (Bracket::where('slug', $slug)->exists()) {
+            $slug = "{$base}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 }

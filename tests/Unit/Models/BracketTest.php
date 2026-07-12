@@ -34,3 +34,28 @@ it('calculates total rounds from its size', function (int $size, int $rounds) {
     [32, 5],
     [64, 6],
 ]);
+
+it('names rounds by distance from the final', function () {
+    $bracket = Bracket::factory()->create(['size' => 32]);
+
+    expect($bracket->roundName(5))->toBe('Final')
+        ->and($bracket->roundName(4))->toBe('Semifinals')
+        ->and($bracket->roundName(3))->toBe('Quarterfinals')
+        ->and($bracket->roundName(2))->toBe('Round of 16')
+        ->and($bracket->roundName(1))->toBe('Round of 32');
+});
+
+it('has no champion until the bracket completes', function () {
+    $bracket = Bracket::factory()->active()->create();
+
+    expect($bracket->champion())->toBeNull();
+});
+
+it('crowns the final round winner as champion', function () {
+    $bracket = Bracket::factory()->completed()->create(['size' => 4]);
+    $winner = Contestant::factory()->for($bracket)->create();
+
+    Matchup::factory()->for($bracket)->create(['round' => 2, 'position' => 0, 'winner_id' => $winner->id]);
+
+    expect($bracket->champion()?->is($winner))->toBeTrue();
+});

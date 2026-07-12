@@ -65,6 +65,25 @@ class Bracket extends Model
         return 'slug';
     }
 
+    public function champion(): ?Contestant
+    {
+        if ($this->status !== BracketStatus::Completed) {
+            return null;
+        }
+
+        return $this->matchups()->where('round', $this->totalRounds())->first()?->winner;
+    }
+
+    public function roundName(int $round): string
+    {
+        return match ($this->totalRounds() - $round) {
+            0 => __('Final'),
+            1 => __('Semifinals'),
+            2 => __('Quarterfinals'),
+            default => __('Round of :remaining', ['remaining' => intdiv($this->size, 2 ** ($round - 1))]),
+        };
+    }
+
     public function totalRounds(): int
     {
         return (int) log($this->size, 2);
