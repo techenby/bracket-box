@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Contestant Images Disk
+    |--------------------------------------------------------------------------
+    |
+    | The disk used for contestant image uploads. Locally this is the public
+    | disk; on Laravel Cloud set CONTESTANTS_DISK=s3 to store images in the
+    | environment's object storage bucket.
+    |
+    */
+
+    'contestants_disk' => env('CONTESTANTS_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

@@ -24,11 +24,11 @@ it('creates a draft bracket and redirects to the edit page', function () {
 
     Livewire::actingAs($user)
         ->test('pages::brackets.create')
-        ->set('name', 'Best Soda')
-        ->set('description', 'The fizzy showdown.')
-        ->set('size', 8)
-        ->set('roundDurationHours', 12)
-        ->set('isUnlisted', true)
+        ->set('form.name', 'Best Soda')
+        ->set('form.description', 'The fizzy showdown.')
+        ->set('form.size', 8)
+        ->set('form.roundDurationHours', 12)
+        ->set('form.isUnlisted', true)
         ->call('save')
         ->assertHasNoErrors()
         ->assertDispatched('toast-show');
@@ -46,14 +46,14 @@ it('creates a draft bracket and redirects to the edit page', function () {
 it('validates the details', function (string $field, mixed $value) {
     Livewire::actingAs(User::factory()->create())
         ->test('pages::brackets.create')
-        ->set('name', 'Valid Name')
+        ->set('form.name', 'Valid Name')
         ->set($field, $value)
         ->call('save')
         ->assertHasErrors($field);
 
     expect(Bracket::count())->toBe(0);
 })->with([
-    'missing name' => ['name', ''],
-    'unsupported size' => ['size', 5],
-    'unsupported duration' => ['roundDurationHours', 3],
+    'missing name' => ['form.name', ''],
+    'unsupported size' => ['form.size', 5],
+    'unsupported duration' => ['form.roundDurationHours', 3],
 ]);

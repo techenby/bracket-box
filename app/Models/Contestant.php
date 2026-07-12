@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -35,5 +36,13 @@ class Contestant extends Model
     public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
+    }
+
+    public function imageUrl(): ?string
+    {
+        return $this->image_path
+            ? Storage::disk(config('filesystems.contestants_disk'))
+                ->url($this->image_path)
+            : null;
     }
 }
