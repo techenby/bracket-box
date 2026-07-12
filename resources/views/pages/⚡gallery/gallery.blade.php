@@ -76,7 +76,7 @@
 
                                     @if ($bracket->status === App\Enums\BracketStatus::Active)
                                         <p class="shrink-0 font-pixel text-[0.5625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
-                                            [ {{ __('Voting open') }} ]
+                                            [ {{ __('Voting open') }}@if ($this->timeRemainingLabel($bracket)) · {{ $this->timeRemainingLabel($bracket) }}@endif ]
                                         </p>
                                     @endif
                                 </div>

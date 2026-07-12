@@ -44,3 +44,26 @@ it('hides unlisted and draft brackets', function () {
         ->assertDontSee($unlisted->name)
         ->assertDontSee($draft->name);
 });
+
+it('shows hours remaining next to voting open', function () {
+    $this->freezeSecond();
+
+    $bracket = App\Models\Bracket::factory()->create(['size' => 4, 'round_duration_hours' => 12]);
+    App\Models\Contestant::factory()->count(4)->for($bracket)->sequence(fn ($sequence) => ['seed' => $sequence->index + 1])->create();
+    app(App\Actions\LaunchBracket::class)->handle($bracket);
+
+    Livewire::test('pages::gallery')
+        ->assertSee(__('Voting open'))
+        ->assertSee('12 hours left');
+});
+
+it('shows days remaining for longer rounds', function () {
+    $this->freezeSecond();
+
+    $bracket = App\Models\Bracket::factory()->create(['size' => 4, 'round_duration_hours' => 48]);
+    App\Models\Contestant::factory()->count(4)->for($bracket)->sequence(fn ($sequence) => ['seed' => $sequence->index + 1])->create();
+    app(App\Actions\LaunchBracket::class)->handle($bracket);
+
+    Livewire::test('pages::gallery')
+        ->assertSee('2 days left');
+});
