@@ -1,4 +1,3 @@
-# Visit https://soloterm.com to learn more
 name: bracket-box
 icon: null
 processes:
@@ -7,6 +6,13 @@ processes:
     working_dir: null
     auto_start: false
     auto_restart: true
+    restart_when_changed: []
+    env: {}
+  Test:
+    command: php artisan test
+    working_dir: null
+    auto_start: false
+    auto_restart: false
     restart_when_changed: []
     env: {}
   Pail:
