@@ -1,0 +1,67 @@
+{
+    "name": "Bracket Box",
+    "description": "Brutalist Bracket Box — square corners, hard #171717 shadows, orange accent on neutral surfaces",
+    "fonts": {
+        "sans": null,
+        "mono": null,
+        "serif": null,
+        "urls": []
+    },
+    "light": {
+        "accent": "#c2410c",
+        "accent-content": "#c2410c",
+        "accent-foreground": "#ffffff",
+        "zinc": {
+            "50": "#fafafa",
+            "100": "#f5f5f5",
+            "200": "#e5e5e5",
+            "300": "#d4d4d4",
+            "400": "#a3a3a3",
+            "500": "#737373",
+            "600": "#525252",
+            "700": "#404040",
+            "800": "#262626",
+            "900": "#171717",
+            "950": "#0a0a0a"
+        },
+        "semantic": {}
+    },
+    "dark": {
+        "accent": "#fb923c",
+        "accent-content": "#fb923c",
+        "accent-foreground": "#0a0a0a",
+        "zinc": {
+            "50": "#fafafa",
+            "100": "#f5f5f5",
+            "200": "#e5e5e5",
+            "300": "#d4d4d4",
+            "400": "#a3a3a3",
+            "500": "#737373",
+            "600": "#525252",
+            "700": "#404040",
+            "800": "#262626",
+            "900": "#171717",
+            "950": "#0a0a0a"
+        },
+        "semantic": {}
+    },
+    "radius": {
+        "sm": "0",
+        "md": "0",
+        "lg": "0",
+        "xl": "0",
+        "2xl": "0"
+    },
+    "shadows": {
+        "2xs": "2px 2px 0 #171717",
+        "xs": "3px 3px 0 #171717",
+        "sm": "4px 4px 0 #171717",
+        "DEFAULT": "4px 4px 0 #171717",
+        "md": "5px 5px 0 #171717",
+        "lg": "6px 6px 0 #171717",
+        "xl": "8px 8px 0 #171717",
+        "2xl": "10px 10px 0 #171717"
+    },
+    "css": "/* Bracket Box brutalist: hard 2px borders on buttons */\n[data-flux-button][data-flux-group-target] {\n    border: 2px solid #171717 !important;\n}\n.dark [data-flux-button][data-flux-group-target] {\n    border: 2px solid rgb(255 255 255 / 0.15) !important;\n}",
+    "spacing": null
+}
