@@ -94,3 +94,27 @@ it('rejects a contestant that is not part of the matchup', function () {
 
     app(CastVote::class)->handle($matchup, $outsider, guestToken: 'guest-token');
 })->throws(InvalidArgumentException::class, 'not part of this matchup');
+
+it('rate limits a voter to 30 votes per minute', function () {
+    $matchup = openMatchupWithContestants();
+    $castVote = app(CastVote::class);
+
+    foreach (range(1, CastVote::MAX_VOTES_PER_MINUTE) as $attempt) {
+        Illuminate\Support\Facades\RateLimiter::hit('vote:'.$castVote->hashFor(token: 'guest-token'));
+    }
+
+    $castVote->handle($matchup, $matchup->contestantOne, guestToken: 'guest-token');
+})->throws(InvalidArgumentException::class, 'Too many votes');
+
+it('does not rate limit voters below the threshold', function () {
+    $matchup = openMatchupWithContestants();
+    $castVote = app(CastVote::class);
+
+    foreach (range(1, CastVote::MAX_VOTES_PER_MINUTE - 1) as $attempt) {
+        Illuminate\Support\Facades\RateLimiter::hit('vote:'.$castVote->hashFor(token: 'guest-token'));
+    }
+
+    $vote = $castVote->handle($matchup, $matchup->contestantOne, guestToken: 'guest-token');
+
+    expect($vote->exists)->toBeTrue();
+});
