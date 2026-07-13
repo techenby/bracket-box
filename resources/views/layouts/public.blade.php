@@ -8,7 +8,7 @@
 
         <div class="relative flex! min-h-dvh flex-col">
             <flux:header container class="relative z-10 border-b-2 border-neutral-900 bg-stone-50 [&>div]:box-border dark:border-white/15 dark:bg-neutral-950">
-                <x-app-logo retro href="{{ route('home') }}" wire:navigate />
+                <x-app-logo href="{{ route('home') }}" wire:navigate />
 
                 <flux:spacer />
 
