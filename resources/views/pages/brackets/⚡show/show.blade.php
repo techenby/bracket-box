@@ -182,7 +182,7 @@
             </section>
         @endif
 
-        <x-card>
+        <x-card class="min-w-0">
             <header class="grid gap-3 border-b-2 border-neutral-900 p-5 dark:border-white/15 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:p-7">
                 <div class="grid gap-2">
                     <p class="font-pixel text-[0.625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
