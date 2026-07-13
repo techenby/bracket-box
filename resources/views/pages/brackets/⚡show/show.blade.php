@@ -168,7 +168,7 @@
                     @endif
                 </header>
 
-                <div class="grid gap-5 lg:grid-cols-2">
+                <div class="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
                     @foreach ($this->rounds[$bracket->current_round] ?? [] as $matchup)
                         <div wire:key="matchup-{{ $matchup->id }}" id="vote-matchup-{{ $matchup->id }}" class="scroll-mt-6">
                             @include('pages::brackets.partials.match-card', [
