@@ -93,6 +93,7 @@
                                     @else
                                         {{ __('Finished · :count contestants', ['count' => $bracket->contestants_count]) }}
                                     @endif
+                                    · {{ trans_choice(':count vote|:count votes', $bracket->votes_count, ['count' => number_format($bracket->votes_count)]) }}
                                 </p>
                             </div>
 

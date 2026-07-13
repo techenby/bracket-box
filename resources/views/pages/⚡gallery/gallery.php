@@ -18,7 +18,7 @@ new #[Layout('layouts.public')] #[Title('Brackets')] class extends Component
         return Bracket::query()
             ->where('is_unlisted', false)
             ->whereIn('status', [BracketStatus::Active, BracketStatus::Completed])
-            ->withCount('contestants')
+            ->withCount(['contestants', 'votes'])
             ->addSelect([
                 'current_round_closes_at' => Matchup::select('closes_at')
                     ->whereColumn('matchups.bracket_id', 'brackets.id')

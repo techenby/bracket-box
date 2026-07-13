@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Carbon;
 
 /**
@@ -52,6 +53,12 @@ class Bracket extends Model
     public function matchups(): HasMany
     {
         return $this->hasMany(Matchup::class)->orderBy('round')->orderBy('position');
+    }
+
+    /** @return HasManyThrough<Vote, Matchup, $this> */
+    public function votes(): HasManyThrough
+    {
+        return $this->hasManyThrough(Vote::class, Matchup::class);
     }
 
     /** @return BelongsTo<User, $this> */
