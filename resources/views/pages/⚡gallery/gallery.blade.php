@@ -69,14 +69,20 @@
                             </p>
 
                             <div class="min-w-0">
+                                @if ($bracket->status === App\Enums\BracketStatus::Active)
+                                    <p class="mb-1 font-pixel text-[0.5625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
+                                        <span aria-hidden="true">&#9654;&nbsp;</span>{{ __('Voting open') }}
+                                    </p>
+                                @endif
+
                                 <div class="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-2">
                                     <h3 class="min-w-0 truncate font-editorial text-2xl tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-3xl">
                                         {{ $bracket->name }}
                                     </h3>
 
-                                    @if ($bracket->status === App\Enums\BracketStatus::Active)
+                                    @if ($bracket->status === App\Enums\BracketStatus::Active && $this->timeRemainingLabel($bracket))
                                         <p class="shrink-0 font-pixel text-[0.5625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
-                                            [ {{ __('Voting open') }}@if ($this->timeRemainingLabel($bracket)) · {{ $this->timeRemainingLabel($bracket) }}@endif ]
+                                            [ {{ $this->timeRemainingLabel($bracket) }} ]
                                         </p>
                                     @endif
                                 </div>

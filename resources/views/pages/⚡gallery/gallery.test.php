@@ -45,7 +45,7 @@ it('hides unlisted and draft brackets', function () {
         ->assertDontSee($draft->name);
 });
 
-it('shows hours remaining next to voting open', function () {
+it('shows a voting open eyebrow with hours remaining in brackets', function () {
     $this->freezeSecond();
 
     $bracket = App\Models\Bracket::factory()->create(['size' => 4, 'round_duration_hours' => 12]);
@@ -54,7 +54,7 @@ it('shows hours remaining next to voting open', function () {
 
     Livewire::test('pages::gallery')
         ->assertSee(__('Voting open'))
-        ->assertSee('12 hours left');
+        ->assertSee('[ 12 hours left ]');
 });
 
 it('shows days remaining for longer rounds', function () {
