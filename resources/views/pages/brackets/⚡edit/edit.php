@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\DistributeSeeds;
 use App\Actions\LaunchBracket;
 use App\Enums\BracketStatus;
 use App\Livewire\Forms\BracketForm;
@@ -106,6 +107,23 @@ new #[Title('Edit bracket')] class extends Component
         unset($this->contestants);
 
         Flux::toast(variant: 'success', text: __('Contestant order saved.'));
+    }
+
+    public function sortBySeed(DistributeSeeds $distributeSeeds): void
+    {
+        $this->authorize('update', $this->bracket);
+
+        if ($this->contestants->count() !== $this->bracket->size) {
+            Flux::toast(variant: 'danger', text: __('Add all :size contestants before sorting by seed.', ['size' => $this->bracket->size]));
+
+            return;
+        }
+
+        $distributeSeeds->handle($this->bracket);
+
+        unset($this->contestants);
+
+        Flux::toast(variant: 'success', text: __('Seeds distributed — the top seeds can only meet in the later rounds.'));
     }
 
     public function launch(LaunchBracket $launchBracket): void

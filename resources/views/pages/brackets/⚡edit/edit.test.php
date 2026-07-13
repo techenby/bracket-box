@@ -172,6 +172,41 @@ it('reorders contestants and resequences seeds', function () {
         ->and($bracket->contestants()->pluck('seed')->all())->toBe([1, 2, 3, 4]);
 });
 
+it('sorts contestants by seed so the top seeds meet last', function () {
+    $bracket = Bracket::factory()->create(['size' => 4]);
+
+    Contestant::factory()
+        ->count(4)
+        ->for($bracket)
+        ->sequence(
+            ['name' => 'Coke', 'seed' => 1],
+            ['name' => 'Mountain Dew', 'seed' => 2],
+            ['name' => 'Diet Pepsi', 'seed' => 3],
+            ['name' => 'Diet Coke', 'seed' => 4],
+        )
+        ->create();
+
+    Livewire::actingAs($bracket->user)
+        ->test('pages::brackets.edit', ['bracket' => $bracket])
+        ->call('sortBySeed')
+        ->assertSeeInOrder([1, 'Coke', 2, 'Diet Coke', 3, 'Mountain Dew', 4, 'Diet Pepsi'])
+        ->assertDispatched('toast-show');
+
+    expect($bracket->contestants()->pluck('name')->all())
+        ->toBe(['Coke', 'Diet Coke', 'Mountain Dew', 'Diet Pepsi']);
+});
+
+it('refuses to sort by seed before the bracket is full', function () {
+    $bracket = draftBracket(size: 4, contestants: 2);
+
+    Livewire::actingAs($bracket->user)
+        ->test('pages::brackets.edit', ['bracket' => $bracket])
+        ->call('sortBySeed')
+        ->assertDispatched('toast-show');
+
+    expect($bracket->contestants()->pluck('seed')->all())->toBe([1, 2]);
+});
+
 it('launches a full bracket and redirects to the dashboard', function () {
     $bracket = draftBracket(size: 4, contestants: 4);
 

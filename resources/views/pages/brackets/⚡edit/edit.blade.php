@@ -27,7 +27,15 @@
         </div>
 
         @if ($this->contestants->isNotEmpty())
-            <flux:text size="sm">{{ __('Drag to reorder — the order sets the first-round matchups: 1 plays 2, 3 plays 4, and so on.') }}</flux:text>
+            <div class="flex items-center justify-between gap-4">
+                <flux:text size="sm">{{ __('Drag to reorder — the order sets the first-round matchups: 1 plays 2, 3 plays 4, and so on.') }}</flux:text>
+
+                @if ($this->contestants->count() === $bracket->size)
+                    <flux:button size="sm" variant="filled" icon="arrows-up-down" wire:click="sortBySeed">
+                        {{ __('Sort by seed') }}
+                    </flux:button>
+                @endif
+            </div>
 
             <div wire:sort="reorder" class="space-y-2">
                 @foreach ($this->contestants as $contestant)
