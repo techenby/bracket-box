@@ -170,6 +170,34 @@ it('hides the countdown once the bracket completes', function () {
         ->assertDontSee(__('Round closes in'));
 });
 
+it('links current round matchups on the map to their vote cards', function () {
+    $bracket = publicBracket();
+    $matchup = $bracket->matchups()->where('round', 1)->orderBy('position')->first();
+
+    Livewire::test('pages::brackets.show', ['bracket' => $bracket])
+        ->assertSeeHtml('id="vote-matchup-'.$matchup->id.'"')
+        ->assertSeeHtml('href="#vote-matchup-'.$matchup->id.'"');
+});
+
+it('stops linking the map once the bracket completes', function () {
+    $bracket = publicBracket();
+    app(CloseRound::class)->handle($bracket);
+    app(CloseRound::class)->handle($bracket);
+
+    Livewire::test('pages::brackets.show', ['bracket' => $bracket])
+        ->assertDontSeeHtml('href="#vote-matchup-');
+});
+
+it('marks your pick on the tournament map', function () {
+    $bracket = publicBracket();
+    $matchup = $bracket->matchups()->where('round', 1)->orderBy('position')->first();
+
+    Livewire::test('pages::brackets.show', asGuestVoter($bracket))
+        ->assertDontSeeHtml('<span class="sr-only">'.__('Your pick').'</span>')
+        ->call('vote', $matchup->id, $matchup->contestant_one_id)
+        ->assertSeeHtml('<span class="sr-only">'.__('Your pick').'</span>');
+});
+
 it('shows a share button on launched brackets', function () {
     $bracket = publicBracket();
 

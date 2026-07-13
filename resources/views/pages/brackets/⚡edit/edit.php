@@ -41,7 +41,7 @@ new #[Title('Edit bracket')] class extends Component
     #[Computed]
     public function contestants(): Collection
     {
-        return $this->bracket->contestants;
+        return $this->bracket->contestants()->get();
     }
 
     public function saveDetails(): void

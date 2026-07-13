@@ -170,7 +170,7 @@
 
                 <div class="grid gap-5 lg:grid-cols-2">
                     @foreach ($this->rounds[$bracket->current_round] ?? [] as $matchup)
-                        <div wire:key="matchup-{{ $matchup->id }}">
+                        <div wire:key="matchup-{{ $matchup->id }}" id="vote-matchup-{{ $matchup->id }}" class="scroll-mt-6">
                             @include('pages::brackets.partials.match-card', [
                                 'matchup' => $matchup,
                                 'matchNumber' => $loop->iteration,
@@ -197,38 +197,72 @@
                 </p>
             </header>
 
-            <div class="overflow-x-auto p-5 sm:p-7">
+            <div
+                class="overflow-x-auto p-5 sm:p-7"
+                x-data
+                x-init="$refs.currentRound && ($el.scrollLeft = $refs.currentRound.getBoundingClientRect().left - $el.getBoundingClientRect().left - 24)"
+            >
                 <div class="flex min-w-max gap-6">
                     @foreach ($this->rounds as $round => $matchups)
-                        <section class="flex w-60 flex-col gap-4" wire:key="round-{{ $round }}">
-                            <div class="flex items-baseline justify-between gap-3 border-b-2 border-dashed border-neutral-300 pb-3 dark:border-white/10">
+                        @php
+                            $isVotingRound = $bracket->status === App\Enums\BracketStatus::Active && $round === $bracket->current_round;
+                        @endphp
+
+                        <section class="flex w-60 flex-col gap-4" wire:key="round-{{ $round }}" @if ($isVotingRound) x-ref="currentRound" @endif>
+                            <div class="flex items-baseline justify-between gap-3 border-b-2 pb-3 {{ $isVotingRound ? 'border-orange-600 dark:border-orange-400' : 'border-dashed border-neutral-300 dark:border-white/10' }}">
                                 <h3 class="font-pixel text-[0.625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
                                     {{ $bracket->roundName($round) }}
                                 </h3>
-                                <p class="font-code text-sm/6 text-neutral-400 tabular-nums dark:text-neutral-500">
-                                    {{ str_pad((string) $round, 2, '0', STR_PAD_LEFT) }}
-                                </p>
+                                @if ($isVotingRound)
+                                    <p class="shrink-0 font-pixel text-[0.625rem] tracking-wide whitespace-nowrap text-orange-700 uppercase dark:text-orange-400">
+                                        <span aria-hidden="true">&#9654;&nbsp;</span>{{ __('Live') }}
+                                    </p>
+                                @else
+                                    <p class="font-code text-sm/6 text-neutral-400 tabular-nums dark:text-neutral-500">
+                                        {{ str_pad((string) $round, 2, '0', STR_PAD_LEFT) }}
+                                    </p>
+                                @endif
                             </div>
 
                             <div class="flex flex-1 flex-col justify-around gap-4">
                                 @foreach ($matchups as $matchup)
-                                    <div wire:key="tree-matchup-{{ $matchup->id }}" class="divide-y-2 divide-neutral-900 border-2 border-neutral-900 bg-stone-50 dark:divide-white/15 dark:border-white/15 dark:bg-neutral-950">
-                                        @foreach ([$matchup->contestantOne, $matchup->contestantTwo] as $contestant)
-                                            @php
-                                                $isWinner = $matchup->winner_id !== null && $matchup->winner_id === $contestant?->id;
-                                                $isEliminated = $matchup->winner_id !== null && ! $isWinner;
-                                            @endphp
+                                    <div wire:key="tree-matchup-{{ $matchup->id }}" class="relative border-2 border-neutral-900 bg-stone-50 dark:border-white/15 dark:bg-neutral-950 {{ $isVotingRound ? 'hover:border-orange-600 dark:hover:border-orange-400' : '' }}">
+                                        @if ($isVotingRound)
+                                            <a
+                                                href="#vote-matchup-{{ $matchup->id }}"
+                                                class="absolute inset-0 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 dark:focus-visible:outline-orange-400"
+                                                aria-label="{{ __('Vote in this matchup') }}"
+                                            ></a>
+                                        @endif
 
-                                            <div class="flex min-w-0 items-center justify-between gap-2 p-3 {{ $isWinner ? 'bg-yellow-100 dark:bg-orange-400/10' : '' }} {{ $isEliminated ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-900 dark:text-neutral-100' }}">
-                                                <p class="min-w-0 truncate font-code text-sm/6 {{ $isWinner ? 'font-semibold' : 'font-normal' }}">
-                                                    {{ $contestant?->name ?? __('TBD') }}
-                                                </p>
+                                        <div class="divide-y-2 divide-neutral-900 dark:divide-white/15">
+                                            @foreach ([$matchup->contestantOne, $matchup->contestantTwo] as $contestant)
+                                                @php
+                                                    $isWinner = $matchup->winner_id !== null && $matchup->winner_id === $contestant?->id;
+                                                    $isEliminated = $matchup->winner_id !== null && ! $isWinner;
+                                                    $isMyPick = $contestant !== null && ($this->myVotes[$matchup->id] ?? null) === $contestant->id;
+                                                @endphp
 
-                                                @if ($isWinner)
-                                                    <flux:icon name="check" variant="micro" class="size-4 shrink-0 fill-orange-700 dark:fill-orange-400" />
-                                                @endif
-                                            </div>
-                                        @endforeach
+                                                <div class="flex min-w-0 items-center justify-between gap-2 p-3 {{ $isWinner ? 'bg-yellow-100 dark:bg-orange-400/10' : '' }} {{ $isEliminated ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-900 dark:text-neutral-100' }}">
+                                                    <p class="min-w-0 truncate font-code text-sm/6 {{ $isWinner ? 'font-semibold' : 'font-normal' }}">
+                                                        {{ $contestant?->name ?? __('TBD') }}
+                                                    </p>
+
+                                                    @if ($isMyPick || $isWinner)
+                                                        <div class="flex shrink-0 items-center gap-1.5">
+                                                            @if ($isMyPick)
+                                                                <flux:icon name="star" variant="micro" class="size-4 shrink-0 fill-orange-700 dark:fill-orange-400" />
+                                                                <span class="sr-only">{{ __('Your pick') }}</span>
+                                                            @endif
+
+                                                            @if ($isWinner)
+                                                                <flux:icon name="check" variant="micro" class="size-4 shrink-0 fill-orange-700 dark:fill-orange-400" />
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
