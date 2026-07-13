@@ -198,7 +198,8 @@
             </header>
 
             <div
-                class="overflow-x-auto p-5 sm:p-7"
+                data-tournament-map
+                class="max-h-[75dvh] overflow-auto overscroll-contain p-5 sm:p-7"
                 x-data
                 x-init="$refs.currentRound && ($el.scrollLeft = $refs.currentRound.getBoundingClientRect().left - $el.getBoundingClientRect().left - 24)"
             >

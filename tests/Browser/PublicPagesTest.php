@@ -23,3 +23,23 @@ it('loads the gallery and bracket page without javascript errors', function () {
         ->assertSee('Smoke Test Bracket')
         ->assertNoJavascriptErrors();
 });
+
+it('keeps the tournament map inside the viewport for large brackets', function () {
+    $bracket = Bracket::factory()->create(['size' => 64, 'name' => 'Mega Bracket']);
+
+    Contestant::factory()
+        ->count(64)
+        ->for($bracket)
+        ->sequence(fn ($sequence) => ['seed' => $sequence->index + 1])
+        ->create();
+
+    app(LaunchBracket::class)->handle($bracket);
+
+    visit(route('brackets.show', $bracket))
+        ->assertSee('Mega Bracket')
+        ->assertNoJavascriptErrors()
+        ->assertScript(
+            "(() => { const map = document.querySelector('[data-tournament-map]'); return map.clientHeight <= window.innerHeight && map.scrollHeight > map.clientHeight; })()",
+            true,
+        );
+});
