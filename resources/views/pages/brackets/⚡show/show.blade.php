@@ -211,11 +211,11 @@
 
                         <section class="flex w-60 flex-col gap-4" wire:key="round-{{ $round }}" @if ($isVotingRound) x-ref="currentRound" @endif>
                             <div class="flex items-baseline justify-between gap-3 border-b-2 pb-3 {{ $isVotingRound ? 'border-orange-600 dark:border-orange-400' : 'border-dashed border-neutral-300 dark:border-white/10' }}">
-                                <h3 class="font-pixel text-[0.625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
+                                <h3 class="font-pixel text-[0.625rem]/6 tracking-wide text-orange-700 uppercase dark:text-orange-400">
                                     {{ $bracket->roundName($round) }}
                                 </h3>
                                 @if ($isVotingRound)
-                                    <p class="shrink-0 font-pixel text-[0.625rem] tracking-wide whitespace-nowrap text-orange-700 uppercase dark:text-orange-400">
+                                    <p class="shrink-0 font-pixel text-[0.625rem]/6 tracking-wide whitespace-nowrap text-orange-700 uppercase dark:text-orange-400">
                                         <span aria-hidden="true">&#9654;&nbsp;</span>{{ __('Live') }}
                                     </p>
                                 @else

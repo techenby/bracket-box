@@ -45,5 +45,9 @@ it('keeps the tournament map inside the viewport for large brackets', function (
         ->assertScript(
             "(() => { const map = document.querySelector('[data-tournament-map]'); return document.documentElement.scrollWidth <= window.innerWidth && map.scrollWidth > map.clientWidth; })()",
             true,
+        )
+        ->assertScript(
+            "(() => { const headers = [...document.querySelectorAll('[data-tournament-map] section > div:first-of-type')]; return headers.length > 1 && new Set(headers.map((header) => header.offsetHeight)).size === 1; })()",
+            true,
         );
 });
