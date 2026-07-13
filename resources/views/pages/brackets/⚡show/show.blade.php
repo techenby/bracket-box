@@ -24,9 +24,7 @@
         @endif
     </div>
 
-    <section class="relative border-2 border-neutral-900 bg-white p-6 shadow-[6px_6px_0_0_#171717] dark:border-white/15 dark:bg-neutral-900 dark:inset-ring dark:inset-ring-white/5 dark:shadow-none sm:p-10">
-        <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-60 [background-image:repeating-linear-gradient(0deg,transparent_0_3px,rgba(0,0,0,0.025)_3px_4px)] dark:[background-image:repeating-linear-gradient(0deg,transparent_0_3px,rgba(255,255,255,0.025)_3px_4px)]"></div>
-
+    <x-card class="sm:p-10">
         <div class="relative grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_auto]">
             <div class="grid gap-5">
                 <p class="font-pixel text-[0.625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
@@ -72,10 +70,10 @@
                 </p>
             </div>
         </div>
-    </section>
+    </x-card>
 
     @if ($bracket->status === App\Enums\BracketStatus::Draft)
-        <section class="border-2 border-neutral-900 bg-white shadow-[6px_6px_0_0_#171717] dark:border-white/15 dark:bg-neutral-900 dark:inset-ring dark:inset-ring-white/5 dark:shadow-none">
+        <x-card>
             <header class="grid gap-2 border-b-2 border-neutral-900 p-5 dark:border-white/15 sm:p-7">
                 <p class="font-pixel text-[0.625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
                     <span aria-hidden="true">&#9654;&nbsp;</span>{{ __('Draft preview') }}
@@ -100,10 +98,10 @@
                     </li>
                 @endforeach
             </ol>
-        </section>
+        </x-card>
     @else
         @if ($champion)
-            <section class="relative overflow-hidden border-2 border-neutral-900 bg-yellow-100 p-6 shadow-[6px_6px_0_0_#171717] dark:border-white/15 dark:bg-neutral-900 dark:inset-ring dark:inset-ring-white/5 dark:shadow-none sm:p-8">
+            <x-card class="bg-yellow-100 p-6 sm:p-8">
                 <div aria-hidden="true" class="absolute -top-5 -right-2 font-pixel text-8xl text-orange-700/10 dark:text-white/5 sm:text-9xl">1UP</div>
 
                 <div class="relative grid justify-items-start gap-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center sm:gap-7">
@@ -122,7 +120,7 @@
                         </h2>
                     </div>
                 </div>
-            </section>
+            </x-card>
         @endif
 
         @if ($bracket->status === App\Enums\BracketStatus::Active)
@@ -184,7 +182,7 @@
             </section>
         @endif
 
-        <section class="min-w-0 border-2 border-neutral-900 bg-white shadow-[6px_6px_0_0_#171717] dark:border-white/15 dark:bg-neutral-900 dark:inset-ring dark:inset-ring-white/5 dark:shadow-none">
+        <x-card>
             <header class="grid gap-3 border-b-2 border-neutral-900 p-5 dark:border-white/15 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:p-7">
                 <div class="grid gap-2">
                     <p class="font-pixel text-[0.625rem] tracking-wide text-orange-700 uppercase dark:text-orange-400">
@@ -238,6 +236,6 @@
                     @endforeach
                 </div>
             </div>
-        </section>
+        </x-card>
     @endif
 </div>

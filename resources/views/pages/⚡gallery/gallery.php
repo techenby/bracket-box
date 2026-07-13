@@ -2,6 +2,7 @@
 
 use App\Enums\BracketStatus;
 use App\Models\Bracket;
+use App\Models\Contestant;
 use App\Models\Matchup;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
@@ -25,10 +26,32 @@ new #[Layout('layouts.public')] #[Title('Brackets')] class extends Component
                     ->whereColumn('matchups.round', 'brackets.current_round')
                     ->orderBy('position')
                     ->limit(1),
+                'champion_name' => Contestant::select('contestants.name')
+                    ->join('matchups', 'matchups.winner_id', '=', 'contestants.id')
+                    ->whereColumn('matchups.bracket_id', 'brackets.id')
+                    ->orderByDesc('matchups.round')
+                    ->limit(1),
             ])
             ->withCasts(['current_round_closes_at' => 'datetime'])
             ->latest()
             ->get();
+    }
+
+    /** @return Collection<int, Bracket> */
+    #[Computed]
+    public function activeBrackets(): Collection
+    {
+        return $this->brackets->where('status', BracketStatus::Active)->values();
+    }
+
+    /** @return Collection<int, Bracket> */
+    #[Computed]
+    public function completedBrackets(): Collection
+    {
+        return $this->brackets
+            ->where('status', BracketStatus::Completed)
+            ->sortByDesc('completed_at')
+            ->values();
     }
 
     public function timeRemainingLabel(Bracket $bracket): ?string

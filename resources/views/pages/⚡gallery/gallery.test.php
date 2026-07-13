@@ -26,12 +26,32 @@ it('lists active public brackets with links to their pages', function () {
         ->assertSee(__('Voting open'));
 });
 
-it('lists completed brackets', function () {
-    $bracket = Bracket::factory()->completed()->create();
+it('lists completed brackets with their champion', function () {
+    $bracket = Bracket::factory()->completed()->create(['size' => 4]);
+    $champion = Contestant::factory()->for($bracket)->create(['seed' => 1]);
+    Matchup::factory()->for($bracket)->create(['round' => 2, 'position' => 0, 'winner_id' => $champion->id]);
 
     Livewire::test('pages::gallery')
         ->assertSee($bracket->name)
-        ->assertSee(__('Finished'));
+        ->assertSee(__('Hall of champions'))
+        ->assertSee(__('Finished'))
+        ->assertSee($champion->name);
+});
+
+it('separates running brackets from finished ones', function () {
+    $active = Bracket::factory()->active()->create();
+    $completed = Bracket::factory()->completed()->create();
+
+    Livewire::test('pages::gallery')
+        ->assertSeeInOrder([__('Tournament board'), $active->name, __('Hall of champions'), $completed->name]);
+});
+
+it('shows the empty state for running brackets while still listing finished ones', function () {
+    $completed = Bracket::factory()->completed()->create();
+
+    Livewire::test('pages::gallery')
+        ->assertSee(__('No brackets are running right now'))
+        ->assertSee($completed->name);
 });
 
 it('hides unlisted and draft brackets', function () {
